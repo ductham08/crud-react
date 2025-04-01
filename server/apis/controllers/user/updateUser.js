@@ -1,11 +1,11 @@
 import User from '../../../models/user.js';
 
-export const updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         const { fullName, dateOfBirth, gender, email, address, role } = req.body;
 
-        
+        // Check if user exists
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({
@@ -14,7 +14,7 @@ export const updateUser = async (req, res) => {
             });
         }
 
-        
+        // Check if email is being changed and if it already exists
         if (email && email !== user.email) {
             const existingUser = await User.findOne({ email });
             if (existingUser) {
@@ -25,7 +25,7 @@ export const updateUser = async (req, res) => {
             }
         }
 
-        
+        // Update user
         const updatedUser = await User.findByIdAndUpdate(
             id,
             {
@@ -52,3 +52,5 @@ export const updateUser = async (req, res) => {
         });
     }
 };
+
+export default updateUser;

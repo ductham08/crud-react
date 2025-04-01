@@ -1,13 +1,19 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/crud-app');
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        const dbUrl = process.env.DATABASE_URL;
+        const dbName = process.env.DATABASE_NAME;
+        const dbUrlWithCorrectDB = dbUrl.includes(`/${dbName}`) ? dbUrl : `${dbUrl}/${dbName}`;
+            
+        await mongoose.connect(dbUrlWithCorrectDB);
+        console.log('Connected to MongoDB database:', mongoose.connection.db.databaseName);
     } catch (error) {
-        console.error(`Error: ${error.message}`);
-        process.exit(1);
+        console.error('Error connecting to MongoDB:', error);
     }
 };
 
-module.exports = connectDB; 
+export default connectDB; 

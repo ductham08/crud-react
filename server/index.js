@@ -1,9 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const { userRouter } = require('./apis/routers');
-const connectDB = require('./config/database');
+import express from "express"
+import cors from "cors"
+import dotenv from 'dotenv'
 
+import connectDB from "./config/database.js";
+import userRouter from "./apis/routers/user.js"
+
+dotenv.config();
 const app = express();
 
 // Connect to Database

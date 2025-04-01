@@ -1,6 +1,6 @@
 import User from '../../../models/user.js';
 
-export const getUsers = async (req, res) => {
+const getUsers = async (req, res) => {
     try {
         const users = await User.find().select('-__v');
         res.status(200).json({
@@ -15,3 +15,5 @@ export const getUsers = async (req, res) => {
         });
     }
 };
+
+export default getUsers;

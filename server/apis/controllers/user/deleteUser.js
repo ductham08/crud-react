@@ -1,10 +1,10 @@
 import User from '../../../models/user.js';
 
-export const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
 
-        
+        // Check if user exists
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({
@@ -13,7 +13,7 @@ export const deleteUser = async (req, res) => {
             });
         }
 
-        
+        // Delete user
         await User.findByIdAndDelete(id);
 
         res.status(200).json({
@@ -28,3 +28,5 @@ export const deleteUser = async (req, res) => {
         });
     }
 };
+
+export default deleteUser;

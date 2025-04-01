@@ -1,6 +1,6 @@
 import User from '../../../models/user.js';
 
-export const createUser = async (req, res) => {
+const createUser = async (req, res) => {
     try {
         const { fullName, dateOfBirth, gender, email, address, role } = req.body;
 
@@ -12,7 +12,6 @@ export const createUser = async (req, res) => {
             });
         }
 
-        
         const user = await User.create({
             fullName,
             dateOfBirth,
@@ -35,3 +34,5 @@ export const createUser = async (req, res) => {
         });
     }
 };
+
+export default createUser;

@@ -1,8 +1,8 @@
-import { getUsers } from './getUsers';
-import { getUser } from './getUser';
-import { createUser } from './createUser';
-import { updateUser } from './updateUser';
-import { deleteUser } from './deleteUser';
+import getUsers from './getUsers.js';
+import getUser from './getUser.js';
+import createUser from './createUser.js';
+import updateUser from './updateUser.js';
+import deleteUser from './deleteUser.js';
 
 export {
     getUsers,
@@ -10,4 +10,4 @@ export {
     createUser,
     updateUser,
     deleteUser
-};
+}; 
