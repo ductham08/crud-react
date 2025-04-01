@@ -3,60 +3,71 @@ import { Button, Input, Table, Space, message } from 'antd';
 import MainLayout from './layouts/MainLayout';
 import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import ModalUser from './modals/ModalUser';
-
-const columns = [
-    {
-        title: 'Name',
-        dataIndex: 'name',
-    },
-    {
-        title: 'Age',
-        dataIndex: 'age',
-    },
-    {
-        title: 'Address',
-        dataIndex: 'address',
-    },
-    {
-        title: 'Actions',
-        key: 'actions',
-        render: (_, record) => (
-            <Space>
-                {/* <Button
-                    type="primary"
-                    icon={<EditOutlined />}
-                    onClick={() => handleEditUser(record)}
-                >
-                    Edit
-                </Button>
-                <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => handleDeleteUser(record.id)}
-                >
-                    Delete
-                </Button> */}
-            </Space>
-        ),
-    },
-];
+import dayjs from 'dayjs';
 
 const Dashboard = () => {
-    const [data, setData] = useState([
-        { id: 1, name: 'John Doe', age: 32, address: 'New York' },
-        { id: 2, name: 'Jane Smith', age: 28, address: 'London' },
-    ]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [data, setData] = useState([]);
+
+    const columns = [
+        {
+            title: 'Name',
+            dataIndex: 'name',
+        },
+        {
+            title: 'Date of Birth',
+            dataIndex: 'dateOfBirth',
+            render: (date) => dayjs(date, 'YYYY/MM/DD').format('DD/MM/YYYY')
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+        },
+        {
+            title: 'Gender',
+            dataIndex: 'gender',
+        },
+        {
+            title: 'Address',
+            dataIndex: 'address',
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space>
+                    <Button
+                        type="primary"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEditUser(record)}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDeleteUser(record.id)}
+                    >
+                        Delete
+                    </Button>
+                </Space>
+            ),
+        },
+    ];
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
 
     const handleAddUser = () => {
-        setEditingUser(null);
-        setIsModalOpen(true);
+        setIsCreateModalOpen(true);
     };
 
     const handleEditUser = (user) => {
-        setEditingUser(user);
-        setIsModalOpen(true);
+        setEditingUser({
+            ...user,
+            dateOfBirth: dayjs(user.dateOfBirth, 'YYYY/MM/DD')
+        });
+        setIsEditModalOpen(true);
     };
 
     const handleDeleteUser = (id) => {
@@ -64,25 +75,35 @@ const Dashboard = () => {
         message.success('User deleted successfully');
     };
 
-    const handleModalClose = () => {
-        setIsModalOpen(false);
+    const handleCreateModalClose = () => {
+        setIsCreateModalOpen(false);
+    };
+
+    const handleEditModalClose = () => {
+        setIsEditModalOpen(false);
         setEditingUser(null);
     };
 
-    const handleModalSubmit = (values) => {
-        if (editingUser) {
-            setData(data.map(user =>
-                user.id === editingUser.id ? { ...user, ...values } : user
-            ));
-            message.success('User updated successfully');
-        } else {
-            const newUser = {
-                id: data.length + 1,
-                ...values
-            };
-            setData([...data, newUser]);
-            message.success('User added successfully');
-        }
+    const handleCreateSubmit = (values) => {
+        const newUser = {
+            id: data.length + 1,
+            ...values,
+            dateOfBirth: values.dateOfBirth.format('YYYY/MM/DD')
+        };
+        setData([...data, newUser]);
+        message.success('User added successfully');
+        setIsCreateModalOpen(false);
+    };
+
+    const handleEditSubmit = (values) => {
+        setData(data.map(user =>
+            user.id === editingUser.id 
+                ? { ...user, ...values, dateOfBirth: values.dateOfBirth.format('YYYY/MM/DD') } 
+                : user
+        ));
+        message.success('User updated successfully');
+        setIsEditModalOpen(false);
+        setEditingUser(null);
     };
 
     return (
@@ -110,12 +131,21 @@ const Dashboard = () => {
                         />
                     </div>
 
+                    {/* Create Modal */}
                     <ModalUser 
-                        isOpen={isModalOpen}
-                        onClose={handleModalClose}
-                        onSubmit={handleModalSubmit}
+                        isOpen={isCreateModalOpen}
+                        onClose={handleCreateModalClose}
+                        onSubmit={handleCreateSubmit}
+                        title="Add New User"
+                    />
+
+                    {/* Edit Modal */}
+                    <ModalUser 
+                        isOpen={isEditModalOpen}
+                        onClose={handleEditModalClose}
+                        onSubmit={handleEditSubmit}
                         data={editingUser}
-                        title={editingUser ? "Edit User" : "Add User"}
+                        title="Edit User"
                     />
                 </div>
             </div>

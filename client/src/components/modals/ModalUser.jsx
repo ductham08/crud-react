@@ -1,9 +1,13 @@
-import { Modal, Form, Input, message, Select, DatePicker } from 'antd';
+import { Modal, Form, Input, Select, DatePicker } from 'antd';
 import React, { useEffect, useState } from 'react'
+import dayjs from 'dayjs';
 
 const ModalUser = ({ isOpen, onClose, onSubmit, data, title }) => {
     const [form] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const maxDate = dayjs().endOf('day');
+    const dateFormat = 'YYYY/MM/DD';
 
     useEffect(() => {
         setIsModalOpen(isOpen);
@@ -16,12 +20,15 @@ const ModalUser = ({ isOpen, onClose, onSubmit, data, title }) => {
 
     const handleOk = async () => {
         try {
+            setLoading(true);
             const values = await form.validateFields();
             onSubmit(values);
             setIsModalOpen(false);
             form.resetFields();
         } catch (error) {
             console.error('Validation failed:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -33,11 +40,13 @@ const ModalUser = ({ isOpen, onClose, onSubmit, data, title }) => {
 
     return (
         <Modal 
-            title={title || "User Information"} 
+            title={title || (data ? "Edit User" : "Add New User")} 
             open={isModalOpen} 
             onOk={handleOk} 
             onCancel={handleCancel}
             destroyOnClose
+            confirmLoading={loading}
+            width={600}
         >
             <Form
                 form={form}
@@ -53,20 +62,27 @@ const ModalUser = ({ isOpen, onClose, onSubmit, data, title }) => {
                 </Form.Item>
 
                 <Form.Item
-                    name="age"
-                    label="Age"
+                    name="dateOfBirth"
+                    label="Date of Birth"
                     rules={[
-                        { required: true, message: 'Please input the date of birth!' }
+                        { required: true, message: 'Please select date of birth!' }
                     ]}
                 >
-                    <DatePicker placeholder="Select date of birth" />
+                    <DatePicker 
+                        placeholder="Select date of birth"
+                        style={{ width: '100%' }}
+                        maxDate={maxDate}
+                        format={dateFormat}
+                        defaultValue={dayjs(maxDate, dateFormat)}
+                    />
                 </Form.Item>
 
                 <Form.Item
                     name="email"
                     label="Email"
                     rules={[
-                        { required: true, message: 'Please input the email!' }
+                        { required: true, message: 'Please input the email!' },
+                        { type: 'email', message: 'Please enter a valid email!' }
                     ]}
                 >
                     <Input placeholder="Enter email" />
@@ -76,7 +92,7 @@ const ModalUser = ({ isOpen, onClose, onSubmit, data, title }) => {
                     name="gender"
                     label="Gender"
                     rules={[
-                        { required: true, message: 'Please input the gender!' }
+                        { required: true, message: 'Please select gender!' }
                     ]}
                 >
                     <Select placeholder="Select gender">
@@ -90,7 +106,7 @@ const ModalUser = ({ isOpen, onClose, onSubmit, data, title }) => {
                     label="Address"
                     rules={[{ required: true, message: 'Please input the address!' }]}
                 >
-                    <Input.TextArea placeholder="Enter address" />
+                    <Input.TextArea placeholder="Enter address" rows={3} />
                 </Form.Item>
             </Form>
         </Modal>
