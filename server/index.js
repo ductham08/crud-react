@@ -1,22 +1,34 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 require('dotenv').config();
+const { userRouter } = require('./apis/routers');
+const connectDB = require('./config/database');
 
 const app = express();
+
+// Connect to Database
+connectDB();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/crud-app')
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log('MongoDB Connection Error:', err));
-
 // Routes
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the CRUD API' });
+});
+
+// API Routes
+app.use('/api/users', userRouter);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!',
+    error: err.message
+  });
 });
 
 // Start server
